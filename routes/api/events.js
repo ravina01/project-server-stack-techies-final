@@ -46,8 +46,11 @@ async(req, res) => {
             event_desc: req.body.event_desc,
             company_name: req.body.company_name,
             event_time: req.body.event_time,
+            event_date: req.body.event_date,
             event_location: req.body.event_location,
-            event_date:req.body.event_date,
+            total_seat : req.body.total_seat,
+            registered : 0
+            
           });
         //   newItem.event_logo.data = fs.readFileSync(req.files.userPhoto.path)
         
@@ -74,7 +77,7 @@ async(req, res) => {
   });
   router.delete('/:id',async (req, res) => {
     try{
-        await Event.findByIdAndRemove({_id:req.params.id});     
+        await event.findByIdAndRemove({_id:req.params.id});     
         res.json("Record Deleted");
     }catch(err){
         res.status(500).send('Server error');
@@ -84,7 +87,7 @@ async(req, res) => {
 
 router.put('/:id',async (req, res) => {
 
-  const eventupdate = await Event.findById(req.body.id);   
+  const eventupdate = await event.findById(req.body.id);   
   eventupdate.event_title = req.body.event_title,
   eventupdate.event_logo = req.body.event_logo,
   eventupdate.company_name = req.body.company_name,    
@@ -111,5 +114,84 @@ router.put('/:id',async (req, res) => {
       res.status(500).send('Server Error');
     }
   });
+
+  router.put('/', async(req, res) => {
+
+    const event = await Event.findById(req.body._id);
+
+    console.log(event);
+
+    event.event_title = req.body.event_title,
+    event.event_logo = req.body.event_logo,
+    event.company_name= req.body.company_name,
+    event.event_time= req.body.event_time,
+    event.event_location= req.body.event_location,
+    event.event_desc = req.body.event_desc,
+    event.event_date = req.body.event_date,
+    event.total_seat = req.body.total_seat,
+
+    await event.save();
+
+    res.send('event updated successfully');
+
+});
+
+router.get('/searchTitle/:search', async (req,res)=>{
+
+  console.log('into the searchtitle function');
+
+  const e = await event.find();
+
+  const element = [];
+
+  for (let i = 0; i < e.length; i++) {
+
+      if(e[i].event_title == req.params.search){
+          element.push(e[i]);
+      }
+  }
+      res.send(element);
+});
+
+router.get('/searchDate/:search', async (req,res)=>{
+
+  console.log('inside the search date function');
+  const e = await event.find(); //fetch the whole array from collection mongo
+      console.log(e);
+  const element = [];
+
+  for (let i = 0; i < e.length; i++) {
+     // console.log(req.params.search);
+
+      date = new Date(e[i].event_date);
+      validdate = date.getFullYear()+'-' + (date.getMonth()+1) + '-'+ (date.getDate()+1);
+      console.log('valid date' +validdate);
+      console.log(req.params.search);
+      if(validdate == req.params.search ){
+          element.push(e[i]);
+      }
+  }
+      res.send(element);
+});
+
+router.get('/searchLocation/:search', async (req,res)=>{
+
+  console.log('inside the search locarion fuction');
+  const e = await event.find(); //fetch the whole array from collection mongo
+
+  const element = [];
+
+  for (let i = 0; i < e.length; i++) {
+      console.log(req.params.search);
+
+      console.log(e[i].event_location);
+
+      if((e[i].event_location) == (req.params.search)){
+          element.push(e[i]);
+      }
+  }
+      res.send(element);
+});
+
   
   module.exports = router;

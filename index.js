@@ -4,6 +4,7 @@ const aboutRoute = require('./routes/api/abouts');
 const eventRoute = require('./routes/api/events');
 const connectDB = require('./config/connectDB');
 const FaqRoute = require('./routes/api/faqs');
+const routeCompany = require('./routes/api/companies');
 const routeContact = require('./routes/api/contacts');
 // var multer = require('multer');
 const cors = require('cors');
@@ -23,6 +24,7 @@ app.use('/faqs', FaqRoute);
 app.use('/api/events', eventRoute);
 app.use('/api/aboutUs', aboutRoute);
 app.use('/api/contact', routeContact);
+app.use('/api/company', routeCompany);
 app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
     next();
